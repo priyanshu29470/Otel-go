@@ -125,14 +125,14 @@ func newMeterProvider(res *resource.Resource, metricExporter metric.Exporter) (*
 
 func newTraceExporter(ctx context.Context) (trace.SpanExporter, error) {
 	return otlptracehttp.New(ctx,
-		otlptracehttp.WithEndpoint("34.170.138.246:4318"),
+		otlptracehttp.WithEndpoint("34.173.206.57:4318"),
 		otlptracehttp.WithInsecure(),
 	)
 }
 
 func newMetricExporter(ctx context.Context) (metric.Exporter, error) {
 	return otlpmetrichttp.New(ctx,
-		otlpmetrichttp.WithEndpoint("34.170.138.246:4318"),
+		otlpmetrichttp.WithEndpoint("34.173.206.57:4318"),
 		otlpmetrichttp.WithInsecure(),
 	)
 }

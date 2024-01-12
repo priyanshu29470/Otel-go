@@ -31,7 +31,7 @@ func hello(w http.ResponseWriter, r *http.Request) {
 	defer span.End()
 
 	requestStatusAttr := attribute.Int("request.status", 200)
-	requestTypeAttr := attribute.String("request,type", "test")
+	requestTypeAttr := attribute.String("request.type", "test")
 	span.SetAttributes(requestStatusAttr)
 	requestCounter.Add(ctx, 1, metric.WithAttributes(requestStatusAttr, requestTypeAttr))
 
