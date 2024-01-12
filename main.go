@@ -82,6 +82,7 @@ func newHTTPHandler() http.Handler {
 
 	// Register handlers.
 	handleFunc("/hello", hello)
+	handleFunc("/error", getError)
 
 	// Add HTTP instrumentation for the whole server.
 	handler := otelhttp.NewHandler(mux, "/")
