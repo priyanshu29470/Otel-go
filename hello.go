@@ -4,6 +4,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"time"
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -11,10 +12,11 @@ import (
 )
 
 var (
-	tracer         = otel.Tracer("hello")
-	meter          = otel.Meter("hello")
-	requestCounter metric.Int64Counter
-	errorCounter   metric.Int64Counter
+	tracer           = otel.Tracer("hello")
+	meter            = otel.Meter("hello")
+	requestCounter   metric.Int64Counter
+	errorCounter     metric.Int64Counter
+	latencyHistogram metric.Int64Histogram
 )
 
 func init() {
@@ -25,12 +27,15 @@ func init() {
 	errorCounter, err = meter.Int64Counter("http.errors",
 		metric.WithDescription("The number of errors"),
 		metric.WithUnit("{error}"))
+	latencyHistogram, err = meter.Int64Histogram("latency",
+		metric.WithDescription("Latency Histogram"))
 	if err != nil {
 		panic(err)
 	}
 }
 
 func hello(w http.ResponseWriter, r *http.Request) {
+	t1 := time.Now()
 	ctx, span := tracer.Start(r.Context(), "success-span")
 	defer span.End()
 
@@ -43,6 +48,8 @@ func hello(w http.ResponseWriter, r *http.Request) {
 	if _, err := io.WriteString(w, resp); err != nil {
 		log.Printf("Write failed: %v\n", err)
 	}
+	dur := time.Since(t1)
+	latencyHistogram.Record(ctx, dur.Microseconds())
 }
 
 func getError(w http.ResponseWriter, r *http.Request) {
